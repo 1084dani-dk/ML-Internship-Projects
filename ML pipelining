@@ -1,0 +1,49 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix, classification_report
+
+
+# Load dataset
+df = pd.read_csv(r"C:\Users\ComputerWorld Faizan\Downloads\telco_churn.csv")
+
+# Remove ID column
+df = df.drop("customerID", axis=1)
+
+# Convert categorical columns to numbers
+df = pd.get_dummies(df, drop_first=True)
+
+# Features and target
+X = df.drop("Churn_Yes", axis=1)
+y = df["Churn_Yes"]
+
+# Train test split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# Pipeline
+pipeline = Pipeline([
+    ("scaler", StandardScaler()),
+    ("model", LogisticRegression())
+])
+
+# Train model
+pipeline.fit(X_train, y_train)
+
+# Prediction
+pred = pipeline.predict(X_test)
+
+# Accuracy
+print("Accuracy:", accuracy_score(y_test, pred))
+
+# Confusion matrix
+print("Confusion Matrix:")
+print(confusion_matrix(y_test, pred))
+
+# Detailed report
+print("\nClassification Report:")
+print(classification_report(y_test, pred))
